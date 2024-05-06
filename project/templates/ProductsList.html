@@ -1,0 +1,31 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+Products
+{% endblock title %}
+
+{% block content %}
+<main class="middle">
+    <section class="section">
+   {% if products %}
+
+        {% for product in products %}
+        <article class="ar1">
+            <a class="a__disc" href="foro.html">
+                <img class="ar__image" src="{{ product.images.url }}">
+            </a>
+            <a class="a__disc" href="#">
+                <div class="ar__price">{{ product.price }}</div>
+                <div class="ar__div">{{ product.discription }}</div>
+            </a>
+        </article>
+        {% endfor %}
+
+   {% else %}
+       <h2>Товаров нет!</h2>
+   {% endif %}
+    </section>
+    <aside class="aside">
+    </aside>
+</main>
+{% endblock content %}

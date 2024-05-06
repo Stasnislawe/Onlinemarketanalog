@@ -1,0 +1,14 @@
+{% extends 'flatpages/default.html' %}
+
+<!-- Название у нас будет Product -->
+{% block title %}
+Product
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
+{% block content %}
+{% if product.images %}
+<p><img src="{{product.images.url}}"></p>
+{% endif %}
+<div class="testovy123">{{ product.product_name }}</div>
+{% endblock content %}

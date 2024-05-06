@@ -1,0 +1,10 @@
+{% extends 'flatpages/default.html' %}
+
+
+{% block content %}
+<h1>Привет, это твой личный кабинет {{ user.username }}</h1>
+<h2>Ку-ку</h2>
+
+<div align="right"><button onclick="location.href='{% url 'logout' %}?next=/profile'">Выйти</button></div>
+
+{% endblock content %}
