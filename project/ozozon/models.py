@@ -5,6 +5,7 @@ from .choices import categorylist
 class Author(AbstractUser):
     code = models.CharField(max_length=15, blank=True, null=True)
 
+
 class Product(models.Model):
     product_name = models.CharField(max_length=50)
     discription = models.TextField()

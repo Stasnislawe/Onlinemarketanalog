@@ -11,10 +11,10 @@ Products
 
         {% for product in products %}
         <article class="ar1">
-            <a class="a__disc" href="foro.html">
+            <a class="a__disc" href="{% url 'detail' product.id %}">
                 <img class="ar__image" src="{{ product.images.url }}">
             </a>
-            <a class="a__disc" href="#">
+            <a class="a__disc" href="{% url 'detail' product.id %}">
                 <div class="ar__price">{{ product.price }}</div>
                 <div class="ar__div">{{ product.discription }}</div>
             </a>

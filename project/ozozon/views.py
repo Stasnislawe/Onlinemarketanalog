@@ -1,8 +1,10 @@
 from allauth.account import app_settings
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, FormView, UpdateView, TemplateView
+from django.views.generic import ListView, DetailView, CreateView, FormView, UpdateView, TemplateView, DeleteView
 from .forms import ProductForm, SignupRegForm
 from .models import Product, Author
 
@@ -39,9 +41,29 @@ class RegisterView(FormView):
     success_url = reverse_lazy("profile")
 
 
-@login_required
-def profile_view(request):
-    return render(request, 'profile.html')
+
+class ProfileView(LoginRequiredMixin, ListView):
+    model = Product
+    template_name = 'profile.html'
+    context_object_name = 'products'
+
+    def get_context_data(self, **kwargs):
+        kwargs['my_listproducts'] = Product.objects.filter(author=self.request.user).order_by('-id')
+        return super().get_context_data(**kwargs)
+
+
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
+    model = Product
+    template_name = 'profile.html'
+    success_url = reverse_lazy('profile')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if self.request.user != self.object.author:
+            return self.handle_no_permission()
+        success_url = self.get_success_url()
+        self.object.delete()
+        return HttpResponseRedirect(success_url)
 
 
 class ConfirmUser(UpdateView):
