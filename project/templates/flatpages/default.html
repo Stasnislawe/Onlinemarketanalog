@@ -16,16 +16,16 @@
     <body class="page__body">
         <header class="header">
             <div class="logo"><a class="main" href="{% url 'plist' %}">SShop</a></div>
-            <form class="search">
-                <input class="search__input" type="text" placeholder="Машина" aria-label="Поиск по сайту">
+            <form action="" method="get" class="search">
+                <input class="search__input" name="product_name__icontains" id="id_product_name__icontains" type="text" placeholder="Машина" aria-label="Поиск по сайту">
                 <button class="search__button" type="submit">Поиск</button>
             </form>
             <div class="top-requests">
-                <button class="top-requests__button" type="button">Книга</button>
-                <button class="top-requests__button" type="button">Обувь</button>
+                <button class="top-requests__button" type="button">Одежда</button>
+                <button class="top-requests__button" type="button">Жильё</button>
                 <button class="top-requests__button" type="button">Авто</button>
                 <button class="top-requests__button" type="button">Электроника</button>
-                <button class="top-requests__button" type="button">Одежда</button>
+                <button class="top-requests__button" type="button">Мебель</button>
             </div>
             <div class="login"><a class="a__login" href="{% url 'account_login' %}">Профиль</a></div>
             {% if request.user.is_authenticated %}

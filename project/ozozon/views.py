@@ -3,6 +3,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, FormView, UpdateView, TemplateView, DeleteView
+
+from .filters import ProductFilter
 from .forms import ProductForm, SignupRegForm, FullProductForm
 from .models import Product, Author, ProductImages
 from django.shortcuts import render
@@ -17,6 +19,16 @@ class ProductsListView(ListView):
     ordering = '-time_create'
     context_object_name = 'products'
     paginate_by = 8
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filterset = ProductFilter(self.request.GET, queryset)
+        return self.filterset.qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filterset'] = self.filterset
+        return context
 
 
 class ProductDetail(DetailView):
