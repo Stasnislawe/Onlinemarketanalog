@@ -17,34 +17,34 @@
             <section class="cart-list"><div class="myproducts">Мои товары на продаже:</div>
                 {% if my_listproducts %}
                 {% for prd in my_listproducts %}
-                <div class="cart-listblock">
-                    <div class="n1">{{ prd.id }}</div>
-                    <div class="n2photo">
-                        <img class="photopr" src="{{ prd.images.url }}">
-                    </div>
-                    <div class="n3">{{ prd.product_name|truncatechars:10 }}</div>
-                    <div class="n4price">{{ prd.price }}</div>
-                    <div class="number">{{ prd.quantity }}</div>
-                    {% if request.user == prd.author %}
-                        <div class="numberdel">
-                        <form id="delete_form{{prd.id}}" action="{% url 'delete' prd.id %}" method="post">{% csrf_token %}</form>
-              <a href="javascript:void()" onclick="delete_question{{prd.id}}()">Снять с продажи</a>
-              <script>
-                  function delete_question{{prd.id}}() {
-                      if (confirm("Вы уверены?")) {
-                          document.getElementById('delete_form{{prd.id}}').submit()
+                    <div class="cart-listblock">
+                        <div class="n1">{{ prd.id }}</div>
+                        <div class="n2photo">
+                            <img class="photopr" src="{{ prd.image.url }}">
+                        </div>
+                        <div class="n3">{{ prd.product_name|truncatechars:20 }}</div>
+                        <div class="n4price">{{ prd.price }}</div>
+                        <div class="number">{{ prd.quantity }}</div>
+                        {% if request.user == prd.author %}
+                            <div class="numberdel">
+                            <form id="delete_form{{prd.id}}" action="{% url 'delete' prd.id %}" method="post">{% csrf_token %}</form>
+                  <a href="javascript:void()" onclick="delete_question{{prd.id}}()">Снять с продажи</a>
+                  <script>
+                      function delete_question{{prd.id}}() {
+                          if (confirm("Вы уверены?")) {
+                              document.getElementById('delete_form{{prd.id}}').submit()
+                          }
+
                       }
 
-                  }
-
-                  </script>
-                        </div>
+                      </script>
+                            </div>
 
 
-                    {% else %}
-                        <div class="numberdel">Нет доступа</div>
-                    {% endif %}
-                </div>
+                        {% else %}
+                            <div class="numberdel">Нет доступа</div>
+                        {% endif %}
+                    </div>
                 {% endfor %}
                 {% else %}
                 <div>Вы еще не подавали объявлений о продаже!</div>

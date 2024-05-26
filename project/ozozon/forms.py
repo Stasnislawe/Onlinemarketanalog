@@ -6,7 +6,7 @@ import random
 from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm
 from django.core.mail import send_mail
-from .models import Product, Author
+from .models import Product, Author, ProductImages
 
 
 class SignupRegForm(UserCreationForm):
@@ -32,21 +32,39 @@ class RegistrationForm(SignupForm):
 
 class ProductForm(forms.ModelForm):
 
-    def __init__(self, *args, **kwargs):
-        super(ProductForm, self).__init__(*args, **kwargs)
-        self.fields['product_name'].label = 'Название'
-        self.fields['discription'].label = 'Описание'
-        self.fields['price'].label = 'Цена'
-        self.fields['quantity'].label = 'Количество'
-        self.fields['category'].label = 'Категория'
-        self.fields['images'].label = 'Изображения'
-
     class Meta:
         model = Product
-
         fields = ['product_name',
                   'discription',
                   'price',
+                  'image',
                   'quantity',
                   'category',
-                  'images']
+                  ]
+
+
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result
+
+
+class FullProductForm(ProductForm):
+    images = MultipleFileField()
+
+    class Meta(ProductForm.Meta):
+        fields = ProductForm.Meta.fields + ['images', ]
+
+

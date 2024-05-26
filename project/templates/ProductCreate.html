@@ -1,13 +1,21 @@
 {% extends 'flatpages/default.html' %}
 
 {% block content %}
-<h1>Создать объявление</h1>
+<div class="createpostblock">Создать новое объявление</div>
 
 <form action="" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Save" />
+        {% for field in form %}
+        <div class="flex-parent">
+            {{ field.errors }}
+            <div class="flex-child">{{ field.label_tag }}</div><div class="flex-child">{{ field }}</div>
+        </div>
+    {% endfor %}
+    <div class="btn_div">
+    <button type="submit" class="btn_submit">Отправить</button>
+    </div>
 </form>
-
+<aside class="aside">
+</aside>
 
 {% endblock content %}

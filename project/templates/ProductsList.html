@@ -11,12 +11,12 @@ Products
 
         {% for product in products %}
         <article class="ar1">
-            <a class="a__disc" href="{% url 'detail' product.id %}">
-                <img class="ar__image" src="{{ product.images.url }}">
+            <a class="a__disc1" href="{% url 'detail' product.id %}">
+                <img class="ar__image" src="{{ product.image.url }}">
             </a>
             <a class="a__disc" href="{% url 'detail' product.id %}">
                 <div class="ar__price">{{ product.price }}</div>
-                <div class="ar__div">{{ product.discription }}</div>
+                <div class="ar__div">{{ product.product_name|truncatechars:20 }}</div>
             </a>
         </article>
         {% endfor %}
@@ -27,5 +27,41 @@ Products
     </section>
     <aside class="aside">
     </aside>
+    <div class="pagination_container">
+
+        {% if page_obj.has_previous %}
+            <div class="pagination_number">
+                <a href="?page=1">1</a>
+            </div>
+            {% if page_obj.previous_page_number != 1 %}
+                <div class="pagination_number">
+                    <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <div class="pagination_number">
+            {{ page_obj.number }}
+        </div>
+
+        {% if page_obj.has_next %}
+        <div class="pagination_number">
+            <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+        </div>
+        {% endif %}
+
+        {% if paginator.num_pages != page_obj.next_page_number %}
+        <div class="pagination_number">
+            <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+        </div>
+        {% endif %}
+
+
+    </div>
+    <footer class="footer">
+            <div>Связь с нами</div>
+            <div>Поддержка проекта</div>
+    </footer>
 </main>
+
 {% endblock content %}

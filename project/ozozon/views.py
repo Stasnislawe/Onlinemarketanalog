@@ -1,19 +1,22 @@
 from allauth.account import app_settings
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, FormView, UpdateView, TemplateView, DeleteView
-from .forms import ProductForm, SignupRegForm
-from .models import Product, Author
+from .forms import ProductForm, SignupRegForm, FullProductForm
+from .models import Product, Author, ProductImages
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
+
 
 
 class ProductsListView(ListView):
     model = Product
     ordering = 'product_name'
     template_name = 'ProductsList.html'
+    ordering = '-time_create'
     context_object_name = 'products'
+    paginate_by = 8
 
 
 class ProductDetail(DetailView):
@@ -21,17 +24,30 @@ class ProductDetail(DetailView):
     template_name = 'Product.html'
     context_object_name = 'product'
 
+    def get_context_data(self, **kwargs):
+        context = super(ProductDetail, self).get_context_data(**kwargs)
+        context['all_img'] = ProductImages.objects.all().filter(product_id=self.object.pk)
+        return context
+
+class ProductImagesDetail(DetailView):
+    model = ProductImages
+    template_name = 'Product.html'
+    context_object_name = 'pr_img'
+
 
 class ProductCreate(CreateView):
-    form_class = ProductForm
+    form_class = FullProductForm
     model = Product
     template_name = 'ProductCreate.html'
-    success_url = reverse_lazy('plist')
 
-    def form_valid(self,form):
+    def form_valid(self, form):
         self.object = form.save(commit=False)
         self.object.author = self.request.user
         self.object.save()
+        files = form.cleaned_data["images"]
+        for f in files:
+            pr = ProductImages(product=Product.objects.get(pk=self.object.pk), images=f)
+            pr.save()
         return super().form_valid(form)
 
 
@@ -39,7 +55,6 @@ class RegisterView(FormView):
     form_class = SignupRegForm
     template_name = 'registration/signup.html'
     success_url = reverse_lazy("profile")
-
 
 
 class ProfileView(LoginRequiredMixin, ListView):

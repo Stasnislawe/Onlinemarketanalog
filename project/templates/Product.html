@@ -7,8 +7,48 @@ Product
 
 <!-- В контенте на странице мы выводим сам товар, идентификатор которого был передан в url -->
 {% block content %}
-{% if product.images %}
-<p><img src="{{product.images.url}}"></p>
-{% endif %}
-<div class="testovy123">{{ product.product_name }}</div>
+<main class="middle">
+    <div class="nazvanie">{{ product.product_name }}</div>
+    <section class="sectionof1">
+        <div class="textof1">
+            <div class="disc">{{ product.discription }}</div>
+            <div class="quant"> Количество в наличие {{ product.quantity }}</div>
+            <div class="price">
+                <div>{{ product.price }}</div>
+                <button class="addtocarz">Добавить в корзину</button>
+            </div>
+            <div class="divauthor">
+                <div class="">Продавец {{ product.author }}</div>
+                <div>Добавить в корзину</div>
+            </div>
+        </div>
+
+        <div class="imgof1">
+            {% if all_img %}
+            <div class="carousel">
+                <div class="carousel-window">
+                    <div class="carousel-slides">
+                        {% for i in all_img %}
+                            <div class="carousel-item">
+                                <img class="car-img" src="{{ i.images.url }}" alt="">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <a href="#" class="carousel-prev">
+                    <span class="carousel-prev-icon">&lt;</span>
+                </a>
+                <a href="#" class="carousel-next">
+                    <span class="carousel-next-icon">&gt;</span>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+    <aside class="aside">
+    </aside>
+    <footer class="footer">
+        <div>Лучше недосолить и потом посолить четко, чем сразу же пересолить</div>
+    </footer>
+</main>
 {% endblock content %}
