@@ -17,15 +17,30 @@
         <header class="header">
             <div class="logo"><a class="main" href="{% url 'plist' %}">SShop</a></div>
             <form action="" method="get" class="search">
-                <input class="search__input" name="product_name__icontains" id="id_product_name__icontains" type="text" placeholder="Машина" aria-label="Поиск по сайту">
+                <input class="search__input" name="product_name__icontains" id="id_product_name__icontains" placeholder="Поиск по сайту" type="text" aria-label="Поиск по сайту">
                 <button class="search__button" type="submit">Поиск</button>
             </form>
             <div class="top-requests">
-                <button class="top-requests__button" type="button">Одежда</button>
-                <button class="top-requests__button" type="button">Жильё</button>
-                <button class="top-requests__button" type="button">Авто</button>
-                <button class="top-requests__button" type="button">Электроника</button>
-                <button class="top-requests__button" type="button">Мебель</button>
+                <form class="top-requests__button">
+                    <input class="search__input" name="category__icontains" id="id_category__icontains" type="hidden" value="CAR">
+                    <button class="search__button_cat" type="submit">Авто</button>
+                </form>
+                <form class="top-requests__button">
+                    <input class="search__input" name="category__icontains" id="id_category__icontains" type="hidden" value="CLOTHES">
+                    <button class="search__button_cat" type="submit">Одежда</button>
+                </form>
+                <form class="top-requests__button">
+                    <input class="search__input" name="category__icontains" id="id_category__icontains" type="hidden" value="HOUSE">
+                    <button class="search__button_cat" type="submit">Жильё</button>
+                </form>
+                <form class="top-requests__button">
+                    <input class="search__input" name="category__icontains" id="id_category__icontains" type="hidden" value="FURNITU">
+                    <button class="search__button_cat" type="submit">Мебель</button>
+                </form>
+                <form class="top-requests__button">
+                    <input class="search__input" name="category__icontains" id="id_category__icontains" type="hidden" value="ELECTRO">
+                    <button class="search__button_cat" type="submit">Электроника</button>
+                </form>
             </div>
             <div class="login"><a class="a__login" href="{% url 'account_login' %}">Профиль</a></div>
             {% if request.user.is_authenticated %}
@@ -41,7 +56,6 @@
 
         <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="{% static 'js/jQuery.Brazzers-Carousel.min.js' %}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>

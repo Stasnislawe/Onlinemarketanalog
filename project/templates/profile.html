@@ -27,6 +27,9 @@
                         <div class="number">{{ prd.quantity }}</div>
                         {% if request.user == prd.author %}
                             <div class="numberdel">
+                                <a href="{% url 'update' prd.id %}">Изменить</a>
+                            </div>
+                            <div class="numberdel">
                             <form id="delete_form{{prd.id}}" action="{% url 'delete' prd.id %}" method="post">{% csrf_token %}</form>
                   <a href="javascript:void()" onclick="delete_question{{prd.id}}()">Снять с продажи</a>
                   <script>

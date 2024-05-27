@@ -1,6 +1,6 @@
 from allauth.account import app_settings
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, FormView, UpdateView, TemplateView, DeleteView
 
@@ -78,6 +78,20 @@ class ProfileView(LoginRequiredMixin, ListView):
         kwargs['my_listproducts'] = Product.objects.filter(author=self.request.user).order_by('-id')
         return super().get_context_data(**kwargs)
 
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = FullProductForm
+    template_name = 'ProductUpdate.html'
+
+    def get_context_data(self,**kwargs):
+        kwargs['update'] = True
+        return super().get_context_data(**kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.request.user != kwargs['instance'].author:
+            return self.handle_no_permission()
+        return kwargs
 
 class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
@@ -91,6 +105,8 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
         success_url = self.get_success_url()
         self.object.delete()
         return HttpResponseRedirect(success_url)
+
+
 
 
 class ConfirmUser(UpdateView):

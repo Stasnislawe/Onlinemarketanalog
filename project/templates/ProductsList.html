@@ -1,5 +1,7 @@
 {% extends 'flatpages/default.html' %}
 
+{% load custom_tags %}
+
 {% block title %}
 Products
 {% endblock title %}
@@ -26,16 +28,33 @@ Products
    {% endif %}
     </section>
     <aside class="aside">
+        <div class="divaside">Фильтры</div>
+        <form class="inputform">
+            <input class="input" name="product_name__icontains" id="id_product_name__icontains" placeholder="Поиск по названию" type="text" aria-label="Поиск по сайту">
+            <input class="input" list="options" name="category__icontains" id="id_category__icontains" placeholder="Выберите из списка">
+            <datalist id="options">
+              <option value="ELECTRO">Электроника</option>
+              <option value="CAR">Авто</option>
+              <option value="HOUSE">Жильё</option>
+              <option value="FURNITU">Мебель</option>
+              <option value="HHGOODS">Товары для дома</option>
+              <option value="CLOTHES">Одежда</option>
+            </datalist>
+            <input class="input" name="price__gt" id="id_price__gt" type="number" placeholder="Цена выше">
+            <input class="input" name="price__lt" id="id_price__lt" type="number" placeholder="Цена ниже">
+            <input class="input" name="quantity__gt" id="id_quantity__gt" type="number" placeholder="Количество от">
+            <button class="buttonform" type="submit">Поиск</button>
+        </form>
     </aside>
     <div class="pagination_container">
 
         {% if page_obj.has_previous %}
             <div class="pagination_number">
-                <a href="?page=1">1</a>
+                <a href="?{% url_replace page=1 %}">1</a>
             </div>
             {% if page_obj.previous_page_number != 1 %}
                 <div class="pagination_number">
-                    <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+                    <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
                 </div>
             {% endif %}
         {% endif %}
@@ -46,13 +65,13 @@ Products
 
         {% if page_obj.has_next %}
         <div class="pagination_number">
-            <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+            <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
         </div>
         {% endif %}
 
         {% if paginator.num_pages != page_obj.next_page_number %}
         <div class="pagination_number">
-            <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+            <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
         </div>
         {% endif %}
 

@@ -1,6 +1,7 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
-from .views import ProductsListView, ProductDetail, ProductCreate, ProfileView, ProductDeleteView, ConfirmUser, account_inactive
+from .views import ProductsListView, ProductDetail, ProductCreate, ProfileView, ProductDeleteView, ConfirmUser, \
+    account_inactive, ProductUpdateView
 
 urlpatterns = [
     path('', ProductsListView.as_view(), name='plist'),
@@ -14,4 +15,5 @@ urlpatterns = [
          name='logout'),
     path('inactive/', account_inactive, name="account_inactive"),
     path('confirm/', ConfirmUser.as_view(), name='confirm_user'),
+    path('update/<int:pk>', ProductUpdateView.as_view(), name='update'),
 ]

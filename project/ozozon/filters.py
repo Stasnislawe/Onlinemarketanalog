@@ -7,10 +7,11 @@ class ProductFilter(FilterSet):
        fields = {
            # поиск по названию
            'product_name': ['icontains'],
-           # 'quantity': ['gt'],
-           # 'price': [
-           #     'lt',  # цена должна быть меньше или равна указанной
-           #     'gt',  # цена должна быть больше или равна указанной
-           # ],
+           'category': ['icontains'],
+           'quantity': ['gt'],
+           'price': [
+               'lt',
+               'gt',
+           ],
        }
 
