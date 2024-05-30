@@ -1,5 +1,7 @@
 {% extends 'flatpages/default.html' %}
 
+{% load custom_filters %}
+
 <!-- Название у нас будет Product -->
 {% block title %}
 Product
@@ -11,18 +13,23 @@ Product
     <div class="nazvanie">{{ product.product_name }}</div>
     <section class="sectionof1">
         <div class="textof1">
-            <div class="disc">{{ product.discription }}</div>
-            <div class="quant"> Количество в наличие {{ product.quantity }}</div>
             <div class="price">
-                <div>{{ product.price }}</div>
-                <button class="addtocarz">Добавить в корзину</button>
+                <div>{{ product.price|currency }}</div>
             </div>
             <div class="divauthor">
-                <div class="">Продавец {{ product.author }}</div>
-                <div>Добавить в корзину</div>
+                <div class="auth">Продавец: {{ product.author }}</div>
+                <a href="" class="addtocart">Перейти к профилю продавца</a>
             </div>
-        </div>
+        {% if product.quantity != 1 %}
+            <div class="quant"> Количество {{ product.quantity }}</div>
+        {% else %}
+            <div class="quant">В наличие ✓</div>
+        {% endif %}
+            <div class="addtoc">
+                 <button class="addtocarz">Добавить в корзину</button>
+            </div>
 
+        </div>
         <div class="imgof1">
             {% if all_img %}
             <div class="carousel">
@@ -45,6 +52,7 @@ Product
             {% endif %}
         </div>
     </section>
+    <div class="disc">Описание: {{ product.discription }}</div>
     <aside class="aside">
     </aside>
     <footer class="footer">

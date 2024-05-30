@@ -246,19 +246,6 @@ a {
     box-shadow: 8px 5px 5px rgb(197, 246, 250);
 }
 
-.sectionof1 .textof1 .disc {
-    font-size: 20px;
-}
-
-.sectionof1 .textof1 .quant {
-    font-size: 18px;
-}
-
-.divauthor {
-    weight: 100%;
-    background-color: white;
-    border-radius: 25px;
-}
 
 /* ar_image */
 .imagepointer {
@@ -348,7 +335,7 @@ img {
 
 .photopr {
     object-fit: container;
-    width: 11vh;
+    width: 15vh;
     height: 11vh;
 }
 
@@ -379,6 +366,57 @@ img {
     height: 94%;
 }
 
+
+.sectionof1 .textof1 .divauthor {
+    weight: 100%;
+    background-color: white;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    display: flex;
+    border-radius: 25px;
+    background-image: linear-gradient(#909fa1, rgb(67,75,77));
+    box-shadow:0px 0px 10px 0px #000;
+
+    .auth {
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        font-size: 30px;
+        padding: 10px 30px;
+        align-items: center;
+    }
+
+    .addtocart {
+        border-radius: 25px;
+        box-shadow:0px 0px 10px 0px #000;
+        background-image: linear-gradient(#909fa1, rgb(67,75,77));
+        display: flex;
+        margin-bottom: 10px;
+        justify-content: center;
+        align-items: center;
+        padding: 5px 20px;
+        font-size: 30px;
+    }
+}
+
+.disc {
+    font-size: 20px;
+    padding-left: 3%;
+    padding-right: 3%;
+    padding-bottom: 2%;
+}
+
+.sectionof1 .textof1 .quant {
+    font-size: 26px;
+    display: flex;
+    height: 62px;
+    justify-content: center;
+    background-color: #35D4A0;
+    border-radius: 20px;
+    align-items: center;
+    margin: 5px 5px;
+}
+
 .sectionof1 .textof1 {
     display: grid;
     height: 500px;
@@ -389,19 +427,36 @@ img {
 .sectionof1 .textof1 .price {
     font-size: 30px;
     font-weight: bold;
-    background-color: ;
+    box-shadow:0px 0px 10px 0px #000;
+    background-color: linear-gradient(#909fa1, rgb(67,75,77));
     border-radius: 26px;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+    width: 100%;
+}
+
+.addtoc {
+    font-size: 30px;
+    font-weight: bold;
+    border-radius: 26px;
+    display: flex;
+    justify-content: center;
     align-items: center;
     height: 100px;
     width: 100%;
 
     .addtocarz {
-        background-color: red;
+        background-color: white;
+        font-size: 30px;
         height: 80%;
-        width: 40%;
+        width: 67%;
         border-radius: 30px;
+    }
+
+    .addtocarz:hover {
+        background-color: #35D4A0;
     }
 }
 

@@ -41,11 +41,6 @@ class ProductDetail(DetailView):
         context['all_img'] = ProductImages.objects.all().filter(product_id=self.object.pk)
         return context
 
-class ProductImagesDetail(DetailView):
-    model = ProductImages
-    template_name = 'Product.html'
-    context_object_name = 'pr_img'
-
 
 class ProductCreate(CreateView):
     form_class = FullProductForm
@@ -78,7 +73,8 @@ class ProfileView(LoginRequiredMixin, ListView):
         kwargs['my_listproducts'] = Product.objects.filter(author=self.request.user).order_by('-id')
         return super().get_context_data(**kwargs)
 
-class ProductUpdateView(UpdateView):
+
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = FullProductForm
     template_name = 'ProductUpdate.html'
@@ -87,11 +83,19 @@ class ProductUpdateView(UpdateView):
         kwargs['update'] = True
         return super().get_context_data(**kwargs)
 
+    def form_valid(self, form):
+        files = form.cleaned_data["images"]
+        for f in files:
+            pr = ProductImages(product=Product.objects.get(pk=self.object.pk), images=f)
+            pr.save()
+        return super().form_valid(form)
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         if self.request.user != kwargs['instance'].author:
             return self.handle_no_permission()
         return kwargs
+
 
 class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
@@ -105,8 +109,6 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):
         success_url = self.get_success_url()
         self.object.delete()
         return HttpResponseRedirect(success_url)
-
-
 
 
 class ConfirmUser(UpdateView):

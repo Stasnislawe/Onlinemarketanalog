@@ -19,7 +19,7 @@ class Product(models.Model):
     discription = models.TextField(verbose_name="Описание")
     time_create = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to=get_image_filename, default='photos/nophoto.jpg', verbose_name="Основное Фото")
-    price = models.FloatField(default='Цена не указана', verbose_name='Цена')
+    price = models.IntegerField(default='Цена не указана', verbose_name='Цена')
     quantity = models.IntegerField(default=1, verbose_name='Количество')
     category = models.CharField(max_length=7, choices=categorylist, verbose_name='Категория')
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
@@ -29,6 +29,7 @@ class Product(models.Model):
 
     def get_absolute_url(self):
         return reverse('detail', args=[str(self.id)])
+
 
 class ProductImages(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

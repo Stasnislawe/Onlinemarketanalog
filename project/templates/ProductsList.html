@@ -1,6 +1,7 @@
 {% extends 'flatpages/default.html' %}
 
 {% load custom_tags %}
+{% load custom_filters %}
 
 {% block title %}
 Products
@@ -17,7 +18,7 @@ Products
                 <img class="ar__image" src="{{ product.image.url }}">
             </a>
             <a class="a__disc" href="{% url 'detail' product.id %}">
-                <div class="ar__price">{{ product.price }}</div>
+                <div class="ar__price">{{ product.price|currency }}</div>
                 <div class="ar__div">{{ product.product_name|truncatechars:20 }}</div>
             </a>
         </article>

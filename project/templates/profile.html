@@ -1,5 +1,5 @@
 {% extends 'flatpages/default.html' %}
-
+{% load custom_filters %}
 {% block content %}
 
             <section class="sectionforprofile">
@@ -23,7 +23,7 @@
                             <img class="photopr" src="{{ prd.image.url }}">
                         </div>
                         <div class="n3">{{ prd.product_name|truncatechars:20 }}</div>
-                        <div class="n4price">{{ prd.price }}</div>
+                        <div class="n4price">{{ prd.price|currency }}</div>
                         <div class="number">{{ prd.quantity }}</div>
                         {% if request.user == prd.author %}
                             <div class="numberdel">
@@ -31,19 +31,16 @@
                             </div>
                             <div class="numberdel">
                             <form id="delete_form{{prd.id}}" action="{% url 'delete' prd.id %}" method="post">{% csrf_token %}</form>
-                  <a href="javascript:void()" onclick="delete_question{{prd.id}}()">Снять с продажи</a>
-                  <script>
-                      function delete_question{{prd.id}}() {
-                          if (confirm("Вы уверены?")) {
-                              document.getElementById('delete_form{{prd.id}}').submit()
-                          }
+                                <a href="javascript:void()" onclick="delete_question{{prd.id}}()">Снять с продажи</a>
+                                <script>
+                                 function delete_question{{prd.id}}() {
+                                    if (confirm("Вы уверены?")) {
+                                     document.getElementById('delete_form{{prd.id}}').submit()
+                                    }
 
-                      }
-
-                      </script>
+                                 }
+                                </script>
                             </div>
-
-
                         {% else %}
                             <div class="numberdel">Нет доступа</div>
                         {% endif %}
