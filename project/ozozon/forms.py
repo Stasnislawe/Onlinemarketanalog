@@ -1,10 +1,12 @@
+from datetime import date
+
 from allauth.account.forms import SignupForm
 from django import forms
 from string import hexdigits
 import random
-
 from django.conf import settings
 from django.contrib.auth.forms import UserCreationForm
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from .models import Product, Author, ProductImages
 
@@ -32,6 +34,15 @@ class RegistrationForm(SignupForm):
 
 class ProductForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super(ProductForm, self).__init__(*args, **kwargs)
+        self.fields['product_name'].label = 'Наименование'
+        self.fields['discription'].label = 'Содержание'
+        self.fields['category'].label = 'Категория'
+        self.fields['image'].label = 'Изображение'
+        self.fields['quantity'].label = 'Количество'
+        self.fields['price'].label = 'Цена'
+
     class Meta:
         model = Product
         fields = ['product_name',
@@ -41,6 +52,40 @@ class ProductForm(forms.ModelForm):
                   'quantity',
                   'category',
                   ]
+
+
+
+
+    def clean(self):
+        cleaned_data=super().clean()
+        name = cleaned_data.get('product_name')
+        description = cleaned_data.get('discription')
+        price = cleaned_data.get('price')
+        quantity = cleaned_data.get('quantity')
+        author = cleaned_data.get('author')
+
+        if name is not None and len(name) > 50:
+            raise ValidationError({
+                "title": "Заголовок не может быть более 50 символов."
+            })
+        if name == description:
+            raise ValidationError(
+                "Заголовок не должен быть идентичным тексту статьи.")
+        if name[0].islower():
+            raise ValidationError(
+                "Заголовок должен начинаться с заглавной буквы.")
+        if description[0].islower():
+            raise ValidationError(
+                "Текст статьи должен начинаться с заглавной буквы.")
+
+        today = date.today()
+        post_limit = Product.objects.filter(author=author, time_create__date=today).count()
+        if post_limit >= 3:
+            raise ValidationError({
+                'text': "Вы можете публиковать только 3 поста в день!"
+            })
+
+        return cleaned_data
 
 
 class MultipleFileInput(forms.ClearableFileInput):

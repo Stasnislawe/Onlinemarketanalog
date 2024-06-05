@@ -2,6 +2,7 @@
 
 .page {
     font-family: sans-serif;
+    height: 100%;
 }
 
 /* page__body */
@@ -9,8 +10,9 @@
 .page__body {
     display: flex;
     margin: 0;
-    height: 100vh;
+    height: 100%;
     flex-direction: column;
+
 }
 
 /* header */
@@ -149,7 +151,7 @@
     flex-direction: column;
     align-items: center;
     width: 100%;
-    height: 50px;
+    height: 10vh;
     background-color: rgb(67,75,77);
 }
 
@@ -164,6 +166,7 @@ a {
 .middle {
     display: grid;
     background-image: linear-gradient(#909fa1, rgb(67,75,77));
+    margin: 0px;
     grid-template-columns: 1fr min-content;
 }
 
@@ -180,8 +183,9 @@ a {
     border-left: 2px solid rgb(197, 246, 250);
     grid-column-start: 2;
     grid-row-start: 1;
-    grid-row-end: 4;
+    grid-row-end: 5;
     width: 30vh;
+
 
 
     .divaside {
@@ -220,6 +224,7 @@ a {
     margin-top: 30px;
     margin-right: 20px;
     margin-left: 20px;
+    height: 100%;
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
@@ -279,6 +284,14 @@ img {
     font-weight: bold;
 }
 
+.ar__quant {
+    width: 100%;
+    margin-left: 5%;
+    font-size: 12px;
+    font-weight: bold;
+    color: #E74022;
+}
+
 .ar__div {
     margin-left: 5%;
     display: flex;
@@ -300,6 +313,50 @@ img {
 
 .divfio {
     display: inline-block;
+
+    .divfio2 {
+        display: flex;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        font-style: italic;
+        font-size: 18px;
+        text-shadow: 1px 2px 1px blue;
+    }
+
+    .backtoprofile {
+        display: flex;
+        justify: content: center;
+        font-size: 18px;
+        font-style: italic;
+        font-weight: bold;
+        color: white;
+        text-shadow: 1px 2px 1px blue;
+    }
+}
+
+.a__mycart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 14%;
+    height: 28%;
+    background-image: linear-gradient(#909fa1, rgb(67,75,77));
+    border-radius: 15px;
+    border: 2px solid rgb(197, 246, 250);
+    box-shadow: 4px 2px 2px rgb(197, 246, 250);
+    font-size: 18px;
+
+
+    a {
+        color: white;
+        font-weight: bold;
+        font-style: italic;
+    }
+
+    &:hover {
+        background-image: linear-gradient(#909fa1, rgb(197, 246, 250));
+    }
 }
 
 .cart-list {
@@ -308,6 +365,8 @@ img {
     row-gap: 2vh;
     margin-right: 5vh;
     margin-left: 5vh;
+    margin-bottom: 100px;
+    height: 100%;
 }
 
 
@@ -450,6 +509,9 @@ img {
     .addtocarz {
         background-color: white;
         font-size: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         height: 80%;
         width: 67%;
         border-radius: 30px;
@@ -499,6 +561,13 @@ img {
 .n1 {
     display: flex;
     width: 15%;
+    justify-content: center;
+    align-items: center;
+}
+
+.nprice {
+    display: flex;
+    width: 25%;
     justify-content: center;
     align-items: center;
 }

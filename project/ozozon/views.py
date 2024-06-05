@@ -6,7 +6,7 @@ from django.views.generic import ListView, DetailView, CreateView, FormView, Upd
 
 from .filters import ProductFilter
 from .forms import ProductForm, SignupRegForm, FullProductForm
-from .models import Product, Author, ProductImages
+from .models import Product, Author, ProductImages, Cart
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 
@@ -95,6 +95,55 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
         if self.request.user != kwargs['instance'].author:
             return self.handle_no_permission()
         return kwargs
+
+
+def add_to_cart(request, product_id):
+    product = Product.objects.get(id=product_id)
+    cart_item, created = Cart.objects.get_or_create(product=product,
+                                                       author=request.user)
+    if product.quantity != 0:
+        cart_item.quantity += 1
+        product.quantity -= 1
+        product.save()
+        cart_item.save()
+        current_page = request.META.get('HTTP_REFERER')
+        return redirect(current_page)
+
+    else:
+        raise ValueError("Нет в наличие")
+
+
+def remove_from_cart(request, cart_id):
+    cart_item = Cart.objects.get(id=cart_id)
+    product = Product.objects.get(id=cart_item.product_id)
+
+    if cart_item.quantity == 1:
+        product.quantity += 1
+        product.save()
+        cart_item.delete()
+    else:
+        cart_item.quantity -= 1
+        product.quantity += 1
+        product.save()
+        cart_item.save()
+    current_page = request.META.get('HTTP_REFERER')
+    return redirect(current_page)
+
+
+class CartView(LoginRequiredMixin, ListView):
+    model = Cart
+    template_name = 'mycart.html'
+    context_object_name = 'cart'
+
+
+    def get_context_data(self, **kwargs):
+        kwargs['mycart'] = Cart.objects.filter(author=self.request.user).order_by('-product__price')
+        cart_items = Cart.objects.filter(author=self.request.user)
+        price = (item.product.price * item.quantity for item in cart_items)
+        total_price = sum(item.product.price * item.quantity for item in cart_items)
+        kwargs['total_price'] = total_price
+        kwargs['pricequant'] = price
+        return super().get_context_data(**kwargs)
 
 
 class ProductDeleteView(LoginRequiredMixin, DeleteView):

@@ -19,13 +19,13 @@ class Product(models.Model):
     discription = models.TextField(verbose_name="Описание")
     time_create = models.DateTimeField(auto_now_add=True)
     image = models.ImageField(upload_to=get_image_filename, default='photos/nophoto.jpg', verbose_name="Основное Фото")
-    price = models.IntegerField(default='Цена не указана', verbose_name='Цена')
-    quantity = models.IntegerField(default=1, verbose_name='Количество')
+    price = models.PositiveIntegerField(default='Цена не указана', verbose_name='Цена')
+    quantity = models.PositiveIntegerField(default=1, verbose_name='Количество')
     category = models.CharField(max_length=7, choices=categorylist, verbose_name='Категория')
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.product_name}: {self.discription}: {self.price}'
+        return f'{self.product_name} || {self.discription[:26]}'
 
     def get_absolute_url(self):
         return reverse('detail', args=[str(self.id)])
@@ -41,9 +41,10 @@ class Cart(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
 
-    def summma(self):
-        product_price = self.product.price
-        return self.quantity * product_price
+    def __str__(self):
+        summa = self.product.price * self.quantity
+        return f'{summa}'
+
 
 
 

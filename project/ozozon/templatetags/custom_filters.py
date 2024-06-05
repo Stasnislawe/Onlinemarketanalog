@@ -5,5 +5,6 @@ register = template.Library()
 
 @register.filter()
 def currency(value):
-    curr_value = format(value, ',').replace(',', '.')
+    int_value = int(value)
+    curr_value = format(int_value, ',').replace(',', '.')
     return f'{curr_value} ₽'

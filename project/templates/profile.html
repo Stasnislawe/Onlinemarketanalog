@@ -4,12 +4,12 @@
 
             <section class="sectionforprofile">
                 <div class="blockfio">
-                    <div class="divfio">{{ user.username }}
+                    <div class="divfio"><div class="divfio2">{{ user.username }}</div>
                         <hr>
                     </div>
                 </div>
-                <div>
-
+                <div class="a__mycart">
+                    <a href="{% url 'mycart' %}">Корзина</a>
                 </div>
                 <div align="right"><button onclick="location.href='{% url 'logout' %}?next=/profile'">Выйти</button></div>
             </section>
@@ -50,5 +50,7 @@
                 <div>Вы еще не подавали объявлений о продаже!</div>
                 {% endif %}
             </section>
-
+            <footer class="footer">
+                <div>Лучше недосолить и потом посолить четко, чем сразу же пересолить</div>
+            </footer>
 {% endblock content %}
