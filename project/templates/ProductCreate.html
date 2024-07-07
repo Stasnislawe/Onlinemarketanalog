@@ -2,20 +2,57 @@
 
 {% block content %}
 <div class="createpostblock">Создать новое объявление</div>
-
 <form action="" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-        {% for field in form %}
-        <div class="flex-parent">
-            {{ field.errors }}
-            <div class="flex-child">{{ field.label_tag }}</div><div class="flex-child">{{ field }}</div>
+    <form>
+    <div class="createadv">
+        <div class="create__name">
+            <input type="text" name="product_name" id="id_product_name" required>
+            <div class="create__name__div">Наименование</div>
         </div>
-    {% endfor %}
-    <div class="btn_div">
-    <button type="submit" class="btn_submit">Отправить</button>
+        <div class="create__name">
+            <input type="text" name="discription" id="id_discription" required>
+            <div class="create__name__div">Описание</div>
+        </div>
+        <div class="create__name">
+            <input type="number" name="price" id="id_price" value="Цена не указана" min="0" required>
+            <div class="create__name__div">Цена</div>
+        </div>
+        <div class="create__name">
+            <input type="number" name="quantity" id="id_quantity" required>
+            <div class="create__name__div">Количество</div>
+        </div>
+        <div class="create__name">
+            <input type="file"  name="image" accept="image/*" id="id_image" required>
+            <div class="create__name__div__img">Главное изображение</div>
+        </div>
+        <div class="create__name">
+            <input list="options"  name="category" id="id_category" required>
+            <div class="create__name__div">Категория</div>
+            <datalist id="options">
+                <option value="ELECTRO">Электроника</option>
+                <option value="CAR">Авто</option>
+                <option value="HOUSE">Жильё</option>
+                <option value="FURNITU">Мебель</option>
+                <option value="HHGOODS">Товары для дома</option>
+                <option value="CLOTHES">Одежда</option>
+            </datalist>
+        </div>
+        <div class="create__name">
+            <input type="file"  name="images" multiple id="id_images" required>
+            <div class="create__name__div__img">Изображения</div>
+        </div>
     </div>
+    <div class="createadv">
+        <button class="button__create" type="submit">Создать</button>
+    </div>
+</form>
 </form>
 <aside class="aside">
 </aside>
+<footer class="footer">
+    <div>Связь с нами</div>
+    <div>Поддержка проекта</div>
+</footer>
 
 {% endblock content %}

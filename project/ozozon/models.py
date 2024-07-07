@@ -5,6 +5,7 @@ from django.template.defaultfilters import slugify
 from .choices import categorylist
 
 class Author(AbstractUser):
+    username = models.CharField(max_length=20, unique=False)
     code = models.CharField(max_length=15, blank=True, null=True)
 
 

@@ -16,20 +16,24 @@ Product
             <div class="price">
                 <div>{{ product.price|currency }}</div>
             </div>
+            <div class="nazvanie">{{ product.product_name }}</div>
             <div class="divauthor">
-                <div class="auth">Продавец: {{ product.author }}</div>
-                <a href="" class="addtocart">Перейти к профилю продавца</a>
+                <div class="auth">Продавец:</div>
+                <a href="" class="a__auth"> {{ product.author }} </a>
             </div>
-        {% if product.quantity > 1 %}
-            <div class="quant"> Количество {{ product.quantity }}</div>
-        {% elif product.quantity < 1 %}
-            <div class="quant">Нет в наличие Х</div>
-        {% else %}
-            <div class="quant">В наличие ✓</div>
-        {% endif %}
+        {% if product.quantity %}
             <div class="addtoc">
                  <a class="addtocarz" href="{% url 'addtocart' product.id %}">Добавить в корзину</a>
             </div>
+        {% endif %}
+        {% if product.quantity > 1 %}
+            <div class="quant"> Количество {{ product.quantity }}</div>
+        {% elif product.quantity < 1 %}
+            <div class="quant2">Нет в наличие Х</div>
+        {% else %}
+            <div class="quant">В наличие ✓</div>
+        {% endif %}
+
 
         </div>
         <div class="imgof1">

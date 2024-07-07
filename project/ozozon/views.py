@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, FormView, UpdateView, TemplateView, DeleteView
-
+from django.contrib.auth.decorators import login_required
 from .filters import ProductFilter
 from .forms import ProductForm, SignupRegForm, FullProductForm
 from .models import Product, Author, ProductImages, Cart
@@ -42,7 +42,7 @@ class ProductDetail(DetailView):
         return context
 
 
-class ProductCreate(CreateView):
+class ProductCreate(LoginRequiredMixin ,CreateView):
     form_class = FullProductForm
     model = Product
     template_name = 'ProductCreate.html'
@@ -97,6 +97,7 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
         return kwargs
 
 
+@login_required()
 def add_to_cart(request, product_id):
     product = Product.objects.get(id=product_id)
     cart_item, created = Cart.objects.get_or_create(product=product,

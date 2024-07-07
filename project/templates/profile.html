@@ -11,22 +11,31 @@
                 <div class="a__mycart">
                     <a href="{% url 'mycart' %}">Корзина</a>
                 </div>
-                <div align="right"><button onclick="location.href='{% url 'logout' %}?next=/profile'">Выйти</button></div>
+                <button class="logout" onclick="location.href='{% url 'logout' %}?next=/profile'">Выйти</button>
             </section>
             <aside class="aside"></aside>
             <section class="cart-list"><div class="myproducts">Мои товары на продаже:</div>
                 {% if my_listproducts %}
+                    <div class="cart-listblock">
+                        <div class="n1">ID</div>
+                        <div class="n2photo">Изображение</div>
+                        <div class="n3">Наименование</div>
+                        <div class="n4price">Цена</div>
+                        <div class="number">Кол-во</div>
+                        <div class="numberedit">Изменение</div>
+                        <div class="numberdel">Удаление</div>
+                    </div>
                 {% for prd in my_listproducts %}
                     <div class="cart-listblock">
                         <div class="n1">{{ prd.id }}</div>
                         <div class="n2photo">
                             <img class="photopr" src="{{ prd.image.url }}">
                         </div>
-                        <div class="n3">{{ prd.product_name|truncatechars:20 }}</div>
+                        <div class="n3"><a href="{% url 'detail' prd.id%}">{{ prd.product_name|truncatechars:20 }}</a></div>
                         <div class="n4price">{{ prd.price|currency }}</div>
                         <div class="number">{{ prd.quantity }}</div>
                         {% if request.user == prd.author %}
-                            <div class="numberdel">
+                            <div class="numberedit">
                                 <a href="{% url 'update' prd.id %}">Изменить</a>
                             </div>
                             <div class="numberdel">
