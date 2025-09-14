@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.product_name }} - Интернет-магазин{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'category_products' product.category.slug %}">{{ product.category.name }}</a></li>
+            <li class="breadcrumb-item active">{{ product.product_name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Изображения товара -->
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.product_name }}"
+                     style="max-height: 400px; object-fit: contain;"
+                     onerror="this.src='https://via.placeholder.com/500x400?text=No+Image'">
+            </div>
+
+            {% if product.additional_images.all %}
+            <div class="row g-2">
+                {% for image in product.additional_images.all %}
+                <div class="col-3">
+                    <img src="{{ image.image.url }}" class="img-thumbnail" alt="Дополнительное фото"
+                         style="height: 80px; object-fit: cover;"
+                         onerror="this.src='https://via.placeholder.com/80x80?text=Image'">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Информация о товаре -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="h3 card-title">{{ product.product_name }}</h1>
+
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="text-warning me-2">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= 4 %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <small class="text-muted">(12 отзывов)</small>
+                    </div>
+
+                    <div class="product-price mb-3">
+                        {% if product.has_discount %}
+                            <span class="h2 text-danger">{{ product.price }} ₽</span>
+                            <del class="text-muted ms-2 h4">{{ product.old_price }} ₽</del>
+                            <span class="badge bg-danger ms-2 fs-6">-{{ product.discount_percent }}%</span>
+                            <div class="text-success small mt-1">
+                                <i class="fas fa-piggy-bank me-1"></i>Экономия: {{ product.discount_amount }} ₽
+                            </div>
+                        {% else %}
+                            <span class="h2 text-danger">{{ product.price }} ₽</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge bg-{% if product.quantity > 0 %}success{% else %}danger{% endif %} me-3">
+                            {% if product.quantity > 0 %}В наличии{% else %}Нет в наличии{% endif %}
+                        </span>
+                        <small class="text-muted">
+                            <i class="fas fa-box me-1"></i>Остаток: {{ product.quantity }} шт.
+                        </small>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5>Описание</h5>
+                        <p class="card-text">{{ product.description }}</p>
+                    </div>
+
+                    <div class="d-flex gap-2 mb-3">
+                        <div class="input-group" style="max-width: 120px;">
+                            <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">-</button>
+                            <input type="number" class="form-control text-center" value="1" min="1" max="{{ product.quantity }}" id="quantity">
+                            <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity()">+</button>
+                        </div>
+
+                        <button class="btn btn-primary flex-grow-1" {% if product.quantity == 0 %}disabled{% endif %}>
+                            <i class="fas fa-shopping-cart me-2"></i>
+                            Добавить в корзину
+                        </button>
+                    </div>
+
+                    <div class="product-meta">
+                        <small class="text-muted">
+                            <i class="fas fa-eye me-1"></i>Просмотров: {{ product.views }}
+                            <i class="fas fa-calendar ms-3 me-1"></i>Добавлен: {{ product.time_create|date:"d.m.Y" }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Похожие товары -->
+    {% if related_products %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="mb-4">Похожие товары</h3>
+            <div class="row g-3">
+                {% for related_product in related_products %}
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <!-- Карточка -->
+                    <a href="{% url 'product_detail' related_product.slug %}" class="text-decoration-none">
+                        <div class="card product-card h-100">
+                            <div class="product-image-container position-relative">
+                                <img src="{{ related_product.image.url }}" class="product-image" alt="{{ related_product.product_name }}"
+                                     onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+
+                                {% if related_product.has_discount %}
+                                <span class="position-absolute top-0 end-0 m-2 badge bg-danger discount-badge">
+                                    -{{ related_product.discount_percent }}%
+                                </span>
+                                {% endif %}
+
+                                {% if related_product.quantity == 0 %}
+                                <div class="position-absolute top-0 start-0 m-2">
+                                    <span class="badge bg-danger">Нет в наличии</span>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="card-body product-card-body">
+                                <h6 class="card-title product-title">{{ related_product.product_name }}</h6>
+
+                                <p class="product-description mb-2">
+                                    {{ related_product.description|truncatewords:15 }}
+                                </p>
+
+                                <!-- Цена для похожего товара (исправлено!) -->
+                                <div class="product-price">
+                                    {% if related_product.has_discount %}
+                                        <div class="discount-price">
+                                            <span class="text-danger fw-bold h6">{{ related_product.price }} ₽</span>
+                                            <div class="mt-1">
+                                                <del class="text-muted small">{{ related_product.old_price }} ₽</del>
+                                                <span class="badge bg-danger ms-2 small">-{{ related_product.discount_percent }}%</span>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <span class="fw-bold h6">{{ related_product.price }} ₽</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="product-meta">
+                                    <small class="text-muted">
+                                        <i class="fas fa-eye me-1"></i>{{ related_product.views }}
+                                        <i class="fas fa-box ms-3 me-1"></i>{{ related_product.quantity }} шт.
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Кнопка корзины -->
+                            <div class="card-footer bg-transparent" onclick="event.stopPropagation()">
+                                <button class="btn btn-primary btn-sm w-100 add-to-cart-btn"
+                                        data-product-id="{{ related_product.id }}"
+                                        {% if related_product.quantity == 0 %}disabled{% endif %}>
+                                    <i class="fas fa-shopping-cart me-1"></i>
+                                    {% if related_product.quantity > 0 %}В корзину{% else %}Нет в наличии{% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function increaseQuantity() {
+    const input = document.getElementById('quantity');
+    const max = parseInt(input.max);
+    if (parseInt(input.value) < max) {
+        input.value = parseInt(input.value) + 1;
+    }
+}
+
+function decreaseQuantity() {
+    const input = document.getElementById('quantity');
+    if (parseInt(input.value) > 1) {
+        input.value = parseInt(input.value) - 1;
+    }
+}
+
+document.getElementById('quantity').addEventListener('change', function() {
+    if (this.value < 1) this.value = 1;
+    if (this.value > parseInt(this.max)) this.value = this.max;
+});
+</script>
+{% endblock %}

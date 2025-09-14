@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Топ категории -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h4 class="mb-3">Популярные категории</h4>
+            <div class="d-flex flex-wrap gap-2">
+                {% for category in top_categories %}
+                <a href="{% url 'category_products' category.slug %}" class="btn btn-outline-primary category-badge">
+                    <i class="fas fa-tag me-1"></i>
+                    {{ category.name }}
+                    <span class="badge bg-secondary ms-1">{{ category.get_product_count }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Aside с фильтрами -->
+        <div class="col-lg-3 col-md-4 mb-4">
+            <div class="card sticky-top" style="top: 100px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Фильтры</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" id="filter-form">
+                        <!-- Фильтр по цене -->
+                        <div class="mb-3">
+                            <label class="form-label">Цена</label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    {{ filter_form.min_price }}
+                                </div>
+                                <div class="col-6">
+                                    {{ filter_form.max_price }}
+                                </div>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" name="with_discount" id="id_with_discount"
+                                       class="form-check-input" value="true"
+                                       {% if request.GET.with_discount %}checked{% endif %}>
+                                <label class="form-check-label" for="id_with_discount">
+                                    Со скидкой
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Сортировка -->
+                        <div class="mb-3">
+                            <label class="form-label">Сортировка</label>
+                            {{ filter_form.sort_by }}
+                        </div>
+
+                        <!-- Фильтр по наличию - рендерим вручную -->
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" name="in_stock" id="id_in_stock"
+                                       class="form-check-input" value="true"
+                                       {% if request.GET.in_stock %}checked{% endif %}>
+                                <label class="form-check-label" for="id_in_stock">
+                                    В наличии
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-check me-2"></i>Применить
+                        </button>
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary w-100 mt-2">
+                            <i class="fas fa-times me-2"></i>Сбросить
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Список товаров -->
+        <div class="col-lg-9 col-md-8">
+            <!-- Заголовок с количеством товаров -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">
+                    {% if page_obj.paginator.count > 0 %}
+                        Найдено товаров: {{ page_obj.paginator.count }}
+                    {% else %}
+                        Товары не найдены
+                    {% endif %}
+                </h5>
+
+                <!-- Сортировка для мобильных -->
+                <div class="dropdown d-md-none">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-sort me-1"></i>Сортировка
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% for value, label in filter_form.sort_by.field.choices %}
+                            <li><a class="dropdown-item" href="?sort_by={{ value }}{% for key, value in request.GET.items %}{% if key != 'sort_by' and key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ label }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            {% if page_obj.paginator.count > 0 %}
+            <div class="row g-3">
+                {% for product in products %}
+                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                    <div class="card product-card h-100">
+                        <!-- Кликабельное изображение товара -->
+                        <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none">
+                            <div class="product-image-container">
+                                <img src="{{ product.image.url }}" class="product-image" alt="{{ product.product_name }}"
+                                     onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                                {% if product.quantity == 0 %}
+                                <div class="position-absolute top-0 start-0 m-2">
+                                    <span class="badge bg-danger">Нет в наличии</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </a>
+
+                        <!-- Кликабельное тело карточки -->
+                        <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none text-dark">
+                            <div class="card-body product-card-body">
+                                <h6 class="card-title product-title">{{ product.product_name }}</h6>
+
+                                <p class="product-description mb-2">
+                                    {{ product.description|truncatewords:15 }}
+                                </p>
+
+                                <div class="price-container">
+                                    <div class="product-price">
+                                        {% if product.has_discount %}
+                                            <div class="discount-price">
+                                                <span class="text-danger fw-bold h6">{{ product.price }} ₽</span>
+                                                <div>
+                                                    <del class="text-muted small">{{ product.old_price }} ₽</del>
+                                                    <span class="badge bg-danger ms-2 small">-{{ product.discount_percent }}%</span>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <span class="fw-bold h6">{{ product.price }} ₽</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="product-meta">
+                                    <small class="text-muted">
+                                        <i class="fas fa-eye me-1"></i>{{ product.views }}
+                                        <i class="fas fa-box ms-3 me-1"></i>{{ product.quantity }} шт.
+                                    </small>
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Кнопка корзины (отдельная логика) -->
+                        <div class="card-footer bg-transparent">
+                            <button class="btn btn-primary btn-sm w-100 add-to-cart-btn"
+                                    data-product-id="{{ product.id }}"
+                                    {% if product.quantity == 0 %}disabled{% endif %}>
+                                <i class="fas fa-shopping-cart me-1"></i>
+                                {% if product.quantity > 0 %}В корзину{% else %}Нет в наличии{% endif %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Товары не найдены</h5>
+                        <p class="text-muted">Попробуйте изменить параметры фильтрации</p>
+                        <a href="{% url 'home' %}" class="btn btn-primary">Сбросить фильтры</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Товары не найдены</h5>
+                <p class="text-muted">Попробуйте изменить параметры фильтрации</p>
+                <a href="{% url 'home' %}" class="btn btn-primary">Сбросить фильтры</a>
+            </div>
+            {% endif %}
+        </div>
+
+            <!-- Пагинация -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Авто-submit при изменении сортировки
+    const sortSelect = document.querySelector('select[name="sort_by"]');
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            document.getElementById('filter-form').submit();
+        });
+    }
+
+    // Авто-submit при изменении галочки "В наличии"
+    const inStockCheckbox = document.querySelector('input[name="in_stock"]');
+    if (inStockCheckbox) {
+        inStockCheckbox.addEventListener('change', function() {
+            document.getElementById('filter-form').submit();
+        });
+    }
+
+    // Плавная прокрутка к верху при пагинации
+    document.querySelectorAll('.page-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 100);
+        });
+    });
+
+    // Обработка клика по кнопке "В корзину"
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const productId = this.getAttribute('data-product-id');
+            const productCard = this.closest('.product-card');
+
+            // Временная анимация добавления в корзину
+            this.innerHTML = '<i class="fas fa-check me-1"></i>Добавлено';
+            this.classList.remove('btn-primary');
+            this.classList.add('btn-success');
+
+            // Здесь будет логика добавления в корзину через AJAX
+            console.log('Добавление товара в корзину:', productId);
+
+            // Через 2 секунды возвращаем исходное состояние
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-shopping-cart me-1"></i>В корзину';
+                this.classList.remove('btn-success');
+                this.classList.add('btn-primary');
+            }, 2000);
+        });
+    });
+
+    // Предотвращаем переход по карточке при клике на кнопку корзины
+    document.querySelectorAll('.card-footer').forEach(footer => {
+        footer.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+});
+</script>
+
+<style>
+/* Стили для кликабельных элементов */
+.product-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.product-image-container {
+    position: relative;
+}
+
+.add-to-cart-btn {
+    transition: all 0.3s ease;
+}
+
+.add-to-cart-btn:hover:not(:disabled) {
+    transform: scale(1.05);
+}
+
+/* Убираем стандартные стили ссылок */
+a.text-decoration-none.text-dark:hover {
+    color: inherit !important;
+}
+</style>
+{% endblock %}

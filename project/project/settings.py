@@ -24,7 +24,8 @@ CART_SESSION_ID = 'cart'
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-q(ekv*=&wag#n6@_=mt+hei_t^e^l-)5a*=)-qp=_kklko5)8a'
+load_dotenv()
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -43,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django.contrib.flatpages',
-    'ozozon',
+    'django.contrib.humanize',
+    'shop',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -153,26 +155,22 @@ MEDIA_URL = '/media/'
 
 LOGIN_REDIRECT_URL = 'profile'
 
-AUTH_USER_MODEL = 'ozozon.Author'
+AUTH_USER_MODEL = 'shop.Author'
 
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
 DEFAULT_FROM_EMAIL = 'uvedomleniynewsportal@ya.ru'
 
-ACCOUNT_FORMS = {'signup': 'ozozon.forms.RegistrationForm'}
+ACCOUNT_FORMS = {'signup': 'shop.forms.RegistrationForm'}
 
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 2
 
 
 SILENCED_SYSTEM_CHECKS = ["auth.W004"]
-
-
-load_dotenv(find_dotenv())
 
 
 EMAIL_HOST = 'smtp.yandex.ru'
