@@ -21,7 +21,7 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" href="{% url 'home' %}">
+                <a class="navbar-brand" href="{% url 'shop:home' %}">
                     <i class="fas fa-store me-2"></i>Магазин
                 </a>
 
@@ -31,21 +31,8 @@
 
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <!-- Навигация -->
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="{% url 'home' %}">
-                                <i class="fas fa-home me-1"></i>Главная
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-list me-1"></i>Все категории
-                            </a>
-                        </li>
-                    </ul>
-
                     <!-- Поиск -->
-                    <form class="d-flex search-form me-3" action="{% url 'search' %}" method="get">
+                    <form class="d-flex search-form me-3" action="{% url 'shop:search' %}" method="get">
                         <div class="input-group">
                             <!-- Скрытое поле для передачи текущей категории -->
                             {% if request.resolver_match.url_name == 'category_products' %}
@@ -61,33 +48,40 @@
                     </form>
 
                     <!-- Корзина и пользователь -->
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav ms-auto">
                         {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-1"></i>{{ user.email }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="fas fa-user me-2"></i>Профиль</a></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}?tab=orders"><i class="fas fa-shopping-bag me-2"></i>Мои заказы</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" action="{% url 'accounts:logout' %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Выйти
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link position-relative" href="#">
                                 <i class="fas fa-shopping-cart me-1"></i>Корзина
-                                <span class="cart-count">3</span>
+                                <span class="badge bg-primary cart-count">0</span>
                             </a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user me-1"></i>{{ user.username }}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Профиль</a></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-shopping-bag me-2"></i>Заказы</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Выйти</a></li>
-                            </ul>
                         </li>
                         {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{% url 'accounts:login' %}">
                                 <i class="fas fa-sign-in-alt me-1"></i>Войти
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="{% url 'accounts:register' %}">
                                 <i class="fas fa-user-plus me-1"></i>Регистрация
                             </a>
                         </li>
@@ -104,6 +98,17 @@
         {% endblock %}
     </main>
 
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -116,7 +121,7 @@
                     <h5>Категории</h5>
                     <ul class="list-unstyled">
                         {% for category in all_categories|slice:":5" %}
-                        <li><a href="{% url 'category_products' category.slug %}" class="text-muted text-decoration-none">{{ category.name }}</a></li>
+                        <li><a href="{% url 'shop:category_products' category.slug %}" class="text-muted text-decoration-none">{{ category.name }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>

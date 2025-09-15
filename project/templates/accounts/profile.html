@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль - Интернет-магазин{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Боковая панель -->
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        {% if user.profile.avatar %}
+                        <img src="{{ user.profile.avatar.url }}" alt="Аватар" class="rounded-circle" width="100" height="100"
+                             onerror="this.src='https://via.placeholder.com/100x100?text=No+Avatar'">
+                        {% else %}
+                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
+                             style="width: 100px; height: 100px;">
+                            <i class="fas fa-user text-white fa-2x"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <h5>{{ user.get_full_name|default:user.email }}</h5>
+                    <p class="text-muted">{{ user.email }}</p>
+
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'accounts:update_profile' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit me-1"></i>Редактировать
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Навигация -->
+            <div class="card mt-3">
+                <div class="list-group list-group-flush">
+                    <a href="?tab=profile" class="list-group-item list-group-item-action {% if active_tab == 'profile' %}active{% endif %}">
+                        <i class="fas fa-user me-2"></i>Профиль
+                    </a>
+                    <a href="?tab=orders" class="list-group-item list-group-item-action {% if active_tab == 'orders' %}active{% endif %}">
+                        <i class="fas fa-shopping-bag me-2"></i>Мои заказы
+                    </a>
+                    <a href="?tab=shipping" class="list-group-item list-group-item-action {% if active_tab == 'shipping' %}active{% endif %}">
+                        <i class="fas fa-truck me-2"></i>Доставка
+                    </a>
+                    <a href="?tab=cart" class="list-group-item list-group-item-action {% if active_tab == 'cart' %}active{% endif %}">
+                        <i class="fas fa-shopping-cart me-2"></i>Корзина
+                        <span class="badge bg-primary float-end">{{ cart_items.count }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основной контент -->
+        <div class="col-lg-9">
+            {% if active_tab == 'profile' %}
+            <!-- Вкладка профиля -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Личные данные</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Содержимое такое же как в предыдущем примере -->
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

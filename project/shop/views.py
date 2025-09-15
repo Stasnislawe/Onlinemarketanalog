@@ -5,6 +5,9 @@ from django.views.generic import ListView, DetailView
 from django.views.generic.base import ContextMixin
 from .models import Product, Category
 from .forms import ProductFilterForm
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class CategoryContextMixin(ContextMixin):

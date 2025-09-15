@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 
-from dotenv import load_dotenv, find_dotenv
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'django.contrib.humanize',
     'shop',
+    'accounts',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -152,15 +153,14 @@ STATICFILES_DIRS = [
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/accounts/login/'
 
-LOGIN_REDIRECT_URL = 'profile'
+AUTH_USER_MODEL = 'auth.User'  # используем стандартную User модель
 
-AUTH_USER_MODEL = 'shop.Author'
-
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USERNAME_REQUIRED = True
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 
 DEFAULT_FROM_EMAIL = 'uvedomleniynewsportal@ya.ru'
 

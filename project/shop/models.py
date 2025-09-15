@@ -1,17 +1,11 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User
 from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.auth import get_user_model  # добавляем импорт
 
-
-class Author(AbstractUser):
-    username = models.CharField(max_length=20, unique=False)
-    code = models.CharField(max_length=15, blank=True, null=True)
-
-    class Meta:
-        verbose_name = 'Автор'
-        verbose_name_plural = 'Авторы'
+User = get_user_model()
 
 
 class Category(models.Model):
@@ -67,7 +61,7 @@ class Product(models.Model):
                                                    validators=[MinValueValidator(0), MaxValueValidator(100)])
     quantity = models.PositiveIntegerField(default=1, verbose_name='Количество', validators=[MinValueValidator(0)])
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', verbose_name='Категория')
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name='Автор')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор')
     views = models.PositiveIntegerField(default=0, verbose_name='Просмотры')
     is_active = models.BooleanField(default=True, verbose_name='Активный')
 
@@ -133,7 +127,7 @@ class ProductImages(models.Model):
 
 
 class Cart(models.Model):
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name='Пользователь')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Товар')
     quantity = models.IntegerField(default=1, validators=[MinValueValidator(1)], verbose_name='Количество')
     created_at = models.DateTimeField(auto_now_add=True)

@@ -6,9 +6,9 @@
 <div class="container mt-4">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Главная</a></li>
             {% if current_category %}
-                <li class="breadcrumb-item"><a href="{% url 'category_products' current_category.slug %}">{{ current_category.name }}</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'shop:category_products' current_category.slug %}">{{ current_category.name }}</a></li>
             {% endif %}
             <li class="breadcrumb-item active">Поиск</li>
         </ol>
@@ -78,7 +78,7 @@
                         <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-check me-2"></i>Применить
                         </button>
-                        <a href="{% url 'search' %}?q={{ query|urlencode }}{% if current_category_slug %}&category={{ current_category_slug }}{% endif %}" class="btn btn-outline-secondary w-100 mt-2">
+                        <a href="{% url 'shop:search' %}?q={{ query|urlencode }}{% if current_category_slug %}&category={{ current_category_slug }}{% endif %}" class="btn btn-outline-secondary w-100 mt-2">
                             <i class="fas fa-times me-2"></i>Сбросить
                         </a>
                     </form>
@@ -106,7 +106,7 @@
                 {% for product in products %}
                 <div class="col-xl-3 col-lg-4 col-md-6">
                     <!-- Карточка -->
-                    <a href="{% url 'product_detail' product.slug %}" class="text-decoration-none">
+                    <a href="{% url 'shop:product_detail' product.slug %}" class="text-decoration-none">
                         <div class="card product-card h-100">
                             <div class="product-image-container">
                                 <img src="{{ product.image.url }}" class="product-image" alt="{{ product.product_name }}"
