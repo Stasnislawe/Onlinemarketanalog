@@ -90,7 +90,6 @@ WSGI_APPLICATION = 'project.wsgi.application'
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
-    'django.core.mail.backends.console.EmailBackend',
 ]
 
 
@@ -157,14 +156,18 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_URL = '/accounts/login/'
 
-AUTH_USER_MODEL = 'auth.User'  # используем стандартную User модель
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
-ACCOUNT_LOGIN_METHODS = {'email'}
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 DEFAULT_FROM_EMAIL = 'uvedomleniynewsportal@ya.ru'
 
-ACCOUNT_FORMS = {'signup': 'shop.forms.RegistrationForm'}
+ACCOUNT_FORMS = {
+    'signup': 'accounts.forms.CustomUserCreationForm',
+}
 
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 2

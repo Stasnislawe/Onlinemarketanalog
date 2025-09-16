@@ -10,6 +10,7 @@ from django.views.generic import CreateView, FormView
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 
 
@@ -21,7 +22,11 @@ class RegisterView(CreateView):
     def form_valid(self, form):
         response = super().form_valid(form)
         user = form.save()
-        login(self.request, user)
+
+        # Явно указываем бэкенд для login
+        backend = 'django.contrib.auth.backends.ModelBackend'
+        login(self.request, user, backend=backend)
+
         messages.success(self.request, 'Регистрация прошла успешно! Добро пожаловать!')
         return response
 
@@ -44,10 +49,22 @@ class LoginView(FormView):
     def form_valid(self, form):
         email = form.cleaned_data.get('username')
         password = form.cleaned_data.get('password')
-        user = authenticate(self.request, username=email, password=password)
+
+        # Пробуем аутентифицировать через оба бэкенда
+        user = None
+
+        # Сначала пробуем стандартный бэкенд
+        user = authenticate(self.request, username=email, password=password,
+                            backend='django.contrib.auth.backends.ModelBackend')
+
+        # Если не сработало, пробуем allauth бэкенд
+        if user is None:
+            user = authenticate(self.request, username=email, password=password,
+                                backend='allauth.account.auth_backends.AuthenticationBackend')
 
         if user is not None:
-            login(self.request, user)
+            # Явно указываем бэкенд для login
+            login(self.request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(self.request, f'Добро пожаловать, {user.email}!')
             return super().form_valid(form)
         else:
