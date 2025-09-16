@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}Корзина - Интернет-магазин{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'shop:home' %}">Главная</a></li>
+            <li class="breadcrumb-item active">Корзина</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4"><i class="fas fa-shopping-cart me-2"></i>Корзина покупок</h2>
+
+            {% if cart_items %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Товар</th>
+                                    <th>Цена</th>
+                                    <th>Количество</th>
+                                    <th>Сумма</th>
+                                    <th>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in cart_items %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ item.product.image.url }}"
+                                                 alt="{{ item.product.product_name }}"
+                                                 class="img-thumbnail me-3"
+                                                 style="width: 60px; height: 60px; object-fit: cover;"
+                                                 onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
+                                            <div>
+                                                <h6 class="mb-0">{{ item.product.product_name }}</h6>
+                                                <small class="text-muted">{{ item.product.category.name }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle">{{ item.product.price }} ₽</td>
+                                    <td class="align-middle">
+                                        <div class="input-group input-group-sm" style="width: 100px;">
+                                            <input type="number" class="form-control text-center"
+                                                   value="{{ item.quantity }}" min="1"
+                                                   data-item-id="{{ item.id }}"
+                                                   onchange="updateQuantity({{ item.id }}, this.value)">
+                                        </div>
+                                    </td>
+                                    <td class="align-middle">{{ item.get_total_price }} ₽</td>
+                                    <td class="align-middle">
+                                        <button class="btn btn-sm btn-danger"
+                                                onclick="removeFromCart({{ item.id }})">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Итого:</strong></td>
+                                    <td><strong>{{ total }} ₽</strong></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a href="{% url 'shop:home' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Продолжить покупки
+                        </a>
+                        <button class="btn btn-primary btn-lg">
+                            <i class="fas fa-credit-card me-2"></i>Оформить заказ
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">Ваша корзина пуста</h4>
+                <p class="text-muted">Добавьте товары, чтобы продолжить покупки</p>
+                <a href="{% url 'shop:home' %}" class="btn btn-primary">
+                    <i class="fas fa-shopping-bag me-2"></i>Начать покупки
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Функции для работы с корзиной
+function updateQuantity(itemId, quantity) {
+    fetch(`/cart/update/${itemId}/`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `quantity=${quantity}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload(); // Просто перезагружаем страницу для простоты
+        }
+    });
+}
+
+function removeFromCart(itemId) {
+    if (confirm('Вы уверены, что хотите удалить товар из корзины?')) {
+        fetch(`/cart/remove/${itemId}/`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            }
+        });
+    }
+}
+
+// Функция для получения CSRF токена
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

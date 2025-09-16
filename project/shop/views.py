@@ -1,9 +1,13 @@
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Count, Q
+from django.views.decorators.http import require_POST
 from django.views.generic import ListView, DetailView
 from django.views.generic.base import ContextMixin
-from .models import Product, Category
+from .models import Product, Category, Cart
 from .forms import ProductFilterForm
 from django.contrib.auth import get_user_model
 
@@ -177,3 +181,120 @@ def search_products(request):
     }
 
     return render(request, 'shop/search_results.html', context)
+
+
+@require_POST
+@login_required
+def add_to_cart(request, product_id):
+    """Универсальное добавление товара в корзину"""
+    product = get_object_or_404(Product, id=product_id)
+
+    # Получаем количество из POST запроса
+    quantity = int(request.POST.get('quantity', 1))
+
+    if quantity < 1:
+        quantity = 1
+
+    # Проверяем доступное количество
+    if quantity > product.quantity:
+        quantity = product.quantity
+        message = f'Добавлено максимальное доступное количество: {product.quantity}'
+    else:
+        message = f'Товар добавлен в корзину'
+
+    # Ищем товар в корзине пользователя
+    cart_item, created = Cart.objects.get_or_create(
+        author=request.user,
+        product=product,
+        defaults={'quantity': quantity}
+    )
+
+    if not created:
+        # Если товар уже есть в корзине, увеличиваем количество
+        new_quantity = cart_item.quantity + quantity
+        if new_quantity > product.quantity:
+            new_quantity = product.quantity
+            message = f'Установлено максимальное доступное количество: {product.quantity}'
+
+        cart_item.quantity = new_quantity
+        cart_item.save()
+
+    # Получаем актуальное количество товаров в корзине
+    cart_count = Cart.objects.filter(author=request.user).count()
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'message': message,
+            'cart_count': cart_count,
+            'item_quantity': cart_item.quantity,
+            'product_quantity': product.quantity
+        })
+    else:
+        messages.success(request, message)
+        return redirect('shop:home')
+
+
+@login_required
+def remove_from_cart(request, cart_item_id):
+    """Удаление товара из корзины"""
+    cart_item = get_object_or_404(Cart, id=cart_item_id, author=request.user)
+    product_name = cart_item.product.product_name
+    cart_item.delete()
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({
+            'success': True,
+            'message': 'Товар удален из корзины',
+            'cart_count': Cart.objects.filter(author=request.user).count()
+        })
+    else:
+        messages.success(request, f'Товар "{product_name}" удален из корзины')
+        return redirect('accounts:profile') + '?tab=cart'
+
+
+@login_required
+def update_cart_quantity(request, cart_item_id):
+    """Обновление количества товара в корзине"""
+    if request.method == 'POST':
+        cart_item = get_object_or_404(Cart, id=cart_item_id, author=request.user)
+        quantity = int(request.POST.get('quantity', 1))
+
+        if quantity > 0:
+            cart_item.quantity = quantity
+            cart_item.save()
+
+            return JsonResponse({
+                'success': True,
+                'new_quantity': cart_item.quantity,
+                'item_total': cart_item.get_total_price(),
+                'cart_total': get_cart_total(request.user)
+            })
+        else:
+            # Если количество 0 - удаляем товар
+            cart_item.delete()
+            return JsonResponse({
+                'success': True,
+                'removed': True,
+                'cart_count': Cart.objects.filter(author=request.user).count(),
+                'cart_total': get_cart_total(request.user)
+            })
+
+
+@login_required
+def cart_view(request):
+    """Страница корзины"""
+    cart_items = Cart.objects.filter(author=request.user).select_related('product')
+    total = sum(item.get_total_price() for item in cart_items)
+
+    return render(request, 'shop/cart.html', {
+        'cart_items': cart_items,
+        'total': total
+    })
+
+
+# Вспомогательная функция
+def get_cart_total(user):
+    """Получение общей суммы корзины"""
+    cart_items = Cart.objects.filter(author=user)
+    return sum(item.get_total_price() for item in cart_items)
